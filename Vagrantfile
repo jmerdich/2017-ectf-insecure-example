@@ -133,10 +133,10 @@ Vagrant.configure(2) do |config|
     v.gui = $enable_gui_mode
 
     # Specify the number of CPU cores to assign to the VM.
-    v.cpus = $num_cpus
+    v.cpus = $num_cpus || 2
 
     # Specify the amount of memory to allocate to the VM (in MB).
-    v.memory = $memory_size
+    v.memory = $memory_size || 2048
 
     # Configure USB settings.
     v.customize ["modifyvm", :id, "--usb", "on"]
@@ -173,12 +173,13 @@ Vagrant.configure(2) do |config|
   end
 
   # Provision the VM.
-  if $ssh_public_key != ""
+  if $ssh_public_key != nil and $ssh_public_key != ""
     config.vm.provision "file",
                         source: "#{$ssh_key_location}/#{$ssh_public_key}",
                         destination: "~/.ssh/#{$ssh_public_key}"
   end
 
+  $files ||= []
   for file in $files
     provisionFile(file, config)
   end
@@ -189,7 +190,9 @@ Vagrant.configure(2) do |config|
 
   # Configure custom system-level settings.
   config.vm.provision "shell", inline: $configure_team_settings
-  config.vm.provision "shell", inline: $configure_local_settings
+  if $configure_local_settings != nil
+    config.vm.provision "shell", inline: $configure_local_settings
+  end
 
   # Install dependencies.
   config.vm.provision "shell", inline: $install_apt_packages
@@ -197,7 +200,9 @@ Vagrant.configure(2) do |config|
 
   # Configure installed tools.
   config.vm.provision "shell", inline: $configure_team_tools
-  config.vm.provision "shell", inline: $configure_local_tools
+  if $configure_local_tools != nil
+    config.vm.provision "shell", inline: $configure_local_tools
+  end
 
   # Store the version of the Vagrant configuration used to provision the VM.
   config.vm.provision "shell", privileged: false,
