@@ -58,6 +58,7 @@ EOT
 # Install required tools.
 $install_apt_packages = <<EOT
 echo "Installing required apt packages."
+export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
 apt-get install -y git gcc g++ gdb pkg-config python-pip python-dev \
