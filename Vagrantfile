@@ -16,7 +16,7 @@ end
 ################################################################################
 
 # Load local configurations.
-local_vagrantfile = File.expand_path('../Vagrantfile.local', __FILE__)
+local_vagrantfile = ENV.fetch("ECTF_VAGRANTLOCAL", File.expand_path('../Vagrantfile.local', __FILE__))
 load local_vagrantfile if File.exists?(local_vagrantfile)
 
 # Load team configurations.
