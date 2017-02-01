@@ -166,6 +166,12 @@ Vagrant.configure(2) do |config|
   # argument is a set of non-required options.
   config.vm.synced_folder "./", "/home/ubuntu/ectf"
 
+  # First, let's fix ubuntu's faulty assumption of this script being a tty
+  config.vm.provision "fix-no-tty", type: "shell" do |s|
+    s.privileged = false
+    s.inline = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
+  end
+
   # Provision the VM.
   if $ssh_public_key != ""
     config.vm.provision "file",
